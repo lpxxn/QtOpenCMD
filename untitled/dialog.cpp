@@ -47,10 +47,12 @@ void Dialog::on_pushButton_clicked()
     // fun2
     //QString strCmdPath(tr("C:/Windows/System32/cmd.exe"));
     // also work
-    //QString strCmdPath(tr("cmd"));
-    QString strCmdPath(tr("notepad"));
+    QString strCmdPath(tr("cmd"));
+    //QString strCmdPath(tr("notepad"));
     m_process->setProgram(strCmdPath);
+    m_process->setWorkingDirectory("C:/Windows/System32");
     connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(onreadyReadStandardOutput()));
+    connect(m_process, SIGNAL(readyReadStandardError()), this, SLOT(onReadyReadStdErr()));
     m_process->start();
     qDebug() << "------------start-----------";
 }
@@ -67,10 +69,24 @@ void Dialog::on_pushButton_2_clicked()
 
     // fun2
     qDebug() << "pid " << m_process->processId();
+    QString str = ui->line_Command->text().trimmed();
+    if (!str.isEmpty()) {
+        QByteArray data;
+        data.append(str);
+        data.append('\n');
+        m_process->write(data);
+    }
 }
 
 void Dialog::onreadyReadStandardOutput()
 {
      QByteArray out = m_process->readAllStandardOutput();
-     qDebug() << QString::fromLocal8Bit(out);
+     //qDebug() << QString::fromLocal8Bit(out);
+     ui->cmdOutput->append(QString::fromLocal8Bit(out));
+}
+
+void Dialog::onReadyReadStdErr()
+{
+    QByteArray error = m_process->readAllStandardError();
+    ui->cmdOutput->append(QString::fromLocal8Bit(error));
 }
