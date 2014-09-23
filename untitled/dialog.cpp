@@ -45,7 +45,10 @@ void Dialog::on_pushButton_clicked()
 
 
     // fun2
-    QString strCmdPath(tr("C:/Windows/System32/cmd.exe"));
+    //QString strCmdPath(tr("C:/Windows/System32/cmd.exe"));
+    // also work
+    //QString strCmdPath(tr("cmd"));
+    QString strCmdPath(tr("notepad"));
     m_process->setProgram(strCmdPath);
     connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(onreadyReadStandardOutput()));
     m_process->start();
