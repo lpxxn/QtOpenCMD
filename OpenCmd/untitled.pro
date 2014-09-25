@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = untitled
 TEMPLATE = app
+CONFIG += c++11
 
 LIBS += shell32.lib
 

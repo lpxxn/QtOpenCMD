@@ -48,8 +48,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Send Command</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
