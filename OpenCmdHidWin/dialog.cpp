@@ -4,6 +4,7 @@
 #include <qt_windows.h>
 
 #include <QThread>
+#include <QTimer>
 #include <QDebug>
 
 #include <Windows.h>
@@ -45,8 +46,7 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_process  = new QProcess(this);
-
+    m_process  = new QProcess(this);        
 }
 
 Dialog::~Dialog()
@@ -86,7 +86,8 @@ void Dialog::onreadyReadStandardOutput()
     QByteArray out = m_process->readAllStandardOutput();
     ui->cmdOutput->append(QString::fromLocal8Bit(out));
     // hid sub Window
-    setSubWinVisibility(m_process->pid(), false);
+
+    QTimer::singleShot(800, this, SLOT(onhidWin()));
 }
 
 void Dialog::onReadyReadStdErr()
@@ -95,27 +96,13 @@ void Dialog::onReadyReadStdErr()
     ui->cmdOutput->append(QString::fromLocal8Bit(error));
 }
 
-void Dialog::setWinVisibility(Q_PID pid, bool visible)
+void Dialog::onhidWin()
 {
-#if WIN32
-    _PROCESS_INFORMATION* pi = pid;
-    setWinVisibility(pi->dwProcessId, visible);
-#else
-
-#endif
+    hidSubWindow(m_process->pid());
 }
 
-void Dialog::setWinVisibility(qint64 processID, bool visible)
-{
-    HWND currentHwnd = GetHwndByProcessId(processID);
-    qDebug() << "currentHand1:  " << currentHwnd;
-    if (currentHwnd)
-    {
-        ShowWindow(currentHwnd, visible == true ? SW_SHOW : SW_HIDE);
-    }
-}
 
-void Dialog::setSubWinVisibility(Q_PID pid, bool visible)
+void Dialog::hidSubWindow(Q_PID pid)
 {
     _PROCESS_INFORMATION* pi = pid;
     HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -126,11 +113,14 @@ void Dialog::setSubWinVisibility(Q_PID pid, bool visible)
     if(Process32First(h, &pe)) {
         do {
             if (pe.th32ParentProcessID == pi->dwProcessId) {
-                QThread::sleep(1);
-                setWinVisibility(pe.th32ProcessID, visible);
+                HWND currentHwnd = GetHwndByProcessId(pe.th32ProcessID);
+                qDebug() << "currentHand1:  " << currentHwnd;
+                if (currentHwnd)
+                {
+                    ShowWindow(currentHwnd, SW_HIDE);
+                }
             }
         } while( Process32Next(h, &pe));
     }
-
     CloseHandle(h);
 }

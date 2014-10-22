@@ -21,15 +21,15 @@ private slots:
     void on_pushButton_2_clicked();
     void onreadyReadStandardOutput();
     void onReadyReadStdErr();
+    void onhidWin();
 
 private:
-    void setWinVisibility(Q_PID pid, bool visible);
-    void setWinVisibility(qint64 processID, bool visible);
-    void setSubWinVisibility(Q_PID pid, bool visible);
+
+    void hidSubWindow(Q_PID pid);
 
 private:
     Ui::Dialog *ui;
-    QProcess* m_process;
+    QProcess* m_process;    
 };
 
 #endif // DIALOG_H

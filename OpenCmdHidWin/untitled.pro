@@ -12,7 +12,7 @@ TARGET = untitled
 TEMPLATE = app
 CONFIG += c++11
 
-LIBS += shell32.lib
+#LIBS += shell32.lib
 
 SOURCES += main.cpp\
         dialog.cpp
